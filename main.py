@@ -30,6 +30,11 @@ def main():
         f.flush()
         os.fsync(f.fileno())
     os.replace(tmp, target)
+    # Round-trip verification: read the file back and confirm the exact
+    # word landed, so a silent write failure can never pass the gate.
+    with open(target, "r", encoding="utf-8") as f:
+        written = f.read()
+    assert written == WORD, "round-trip mismatch: entry.txt is not the word"
 
 
 if __name__ == "__main__":
